@@ -12,6 +12,14 @@ def show_hosts():
     config = get_config()
     for host in config:
         for line in host.config:
+            if ("Hostname" in line.content):
+                print(f"{line.host}: {line.content["Hostname"]}")
+
+
+def show_json():
+    config = get_config()
+    for host in config:
+        for line in host.config:
             print(json.dumps(line.content, indent=4, default=str))
 
 
