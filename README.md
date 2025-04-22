@@ -1,6 +1,6 @@
 # SSH Manager
 
-A personal tool/project to more easily manage your .ssh/config file.
+A tool to more easily manage your .ssh/config file.
 
 ## Features
 - [ ] List Hosts
