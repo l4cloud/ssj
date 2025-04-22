@@ -1,6 +1,7 @@
 import os.path
 import parser
 import json
+from config import get_config
 from rich import print
 from rich.table import Table
 from rich.console import Console
@@ -12,15 +13,19 @@ def show_hosts():
     config = get_config()
     for host in config:
         for line in host.config:
-            if ("Hostname" in line.content):
-                print(f"{line.host}: {line.content["Hostname"]}")
+            if (line.key.lower() == "hostname"):
+                print(f"{line.host}: {line.value}")
 
 
 def show_json():
     config = get_config()
+    hosts = []
     for host in config:
+        new = {"host": host.name}
         for line in host.config:
-            print(json.dumps(line.content, indent=4, default=str))
+            new[line.key] = line.value
+        hosts.append(new)
+    print(json.dumps(hosts, indent=4, default=str))
 
 
 def show_table():
@@ -28,14 +33,6 @@ def show_table():
     config = get_config()
     for host in config:
         for line in host.config:
-            if ("Hostname" in line.content):
-                table.add_row(line.host, line.content["Hostname"])
+            if (line.key.lower() == "hostname"):
+                table.add_row(line.host, line.value)
     console.print(table)
-
-
-def get_config():
-    path = os.path.expanduser("~/.ssh/config")
-    if os.path.isfile(path):
-        return parser.parse_file(open(path, "r"))
-    else:
-        raise Exception("SSH config is not present")

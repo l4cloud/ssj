@@ -23,13 +23,12 @@ import json
 def parse_file(config):
     in_host = False
     hosts = []
-    idx = 0
     for line in config:
         if (line.strip()):
             values = parse_line(line)
             key = values[0]
             value = values[1]
-            if (key == "Host"):
+            if (key.lower() == "host"):
                 in_host = True
                 hosts.append(Host(name=value))
             elif in_host:

@@ -1,5 +1,6 @@
 import typer
 import list_helper
+import edit_helper
 from typing_extensions import Annotated
 app = typer.Typer()
 
@@ -25,6 +26,17 @@ def add(name: str, hostname, identity: str = ""):
     '''
     print(f"Add: {name} with hostname: {hostname} to ssh file")
     print(identity)
+
+
+@app.command()
+def edit(host: Annotated[str, typer.Option("--host", "-h")] = ""):
+    '''
+    Edits a new SSH alias
+    '''
+    if host == "":
+        edit_helper.select()
+    else:
+        edit_helper.edit(host)
 
 
 @app.command()
