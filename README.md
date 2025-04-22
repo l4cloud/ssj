@@ -3,8 +3,8 @@
 A tool to more easily manage your .ssh/config file.
 
 ## Features
-- [ ] List Hosts
-- [ ] Edit Exisitng hosts
+- [x] List Hosts
+- [x] Edit Exisitng hosts
 - [ ] Delete Existing host
 - [ ] Add new host via command
 - [ ] Add new host based on ssh command as input (parse input)
