@@ -2,6 +2,12 @@ import list_helper
 from typer import prompt
 import subprocess
 
+fzf_ssh = """#!/bin/bash
+selected=$(awk '/^Host / { print $2 }' ~/.ssh/config | fzf)
+clear
+ssh $(echo "$selected" | tr -d '\r')
+"""
+
 
 def connect():
     hosts = list_helper.show_numbered_grid()
@@ -11,4 +17,4 @@ def connect():
 
 
 def fzf_connect():
-    subprocess.run(["sh", "./fssh.sh"])
+    subprocess.run(["bash", "-c", fzf_ssh])
