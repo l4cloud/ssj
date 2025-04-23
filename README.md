@@ -8,4 +8,5 @@ A tool to more easily manage your .ssh/config file.
 - [x] Delete Existing host
 - [ ] Add new host via command
 - [ ] Add new host based on ssh command as input (parse input)
-- [ ] fuzzy find & start ssh session (fzf or other alternative)
+- [x] List and connect to host using a number
+- [ ] fuzzy find & connect to host (fzf or other alternative)
