@@ -17,6 +17,31 @@ def show_hosts():
                 print(f"{line.host}: {line.value}")
 
 
+def show_numbered_grid():
+    config = get_config()
+    columns = 4
+    index = 1
+    host_strings = []
+    output_hosts = {}
+    grid = Table.grid(expand=False)
+    for host in config:
+        host_strings.append(f"[{index}] [green]{host.name} ")
+        output_hosts[str(index)] = host.name
+        index += 1
+
+    for i in range(columns):
+        grid.add_column()
+
+    for i in range(0, len(host_strings), columns):
+        row = host_strings[i:i + columns]
+        if len(row) < columns:
+            row.extend([""] * (columns - len(row)))
+        grid.add_row(*row)
+
+    print(grid)
+    return (output_hosts)
+
+
 def show_json():
     config = get_config()
     hosts = []
@@ -29,7 +54,8 @@ def show_json():
 
 
 def show_table():
-    table = Table("Name", "Hostname", "User", "IdentityFile", title="Hosts")
+    table = Table("Name", "Hostname", "User",
+                  "IdentityFile", title="Hosts :rocket:")
     config = get_config()
     for host in config:
         hostname = ""

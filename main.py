@@ -1,4 +1,5 @@
 import typer
+import connect_helper
 import list_helper
 import edit_helper
 from typing_extensions import Annotated
@@ -26,6 +27,14 @@ def add(name: str, hostname, identity: str = ""):
     '''
     print(f"Add: {name} with hostname: {hostname} to ssh file")
     print(identity)
+
+
+@app.command()
+def connect():
+    '''
+    Connects to a host
+    '''
+    connect_helper.connect()
 
 
 @app.command()
