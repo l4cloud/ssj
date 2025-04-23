@@ -119,6 +119,12 @@ class Host:
     def add_config(self, line):
         self.config.append(line)
 
+    def remove_config(self, key):
+        for i in self.config:
+            print(i.key.lower())
+            if (i.key.lower() == key.lower()):
+                self.config.remove(i)
+
 
 def get_config():
     path = os.path.expanduser("~/.ssh/config")

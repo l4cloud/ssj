@@ -29,10 +29,22 @@ def show_json():
 
 
 def show_table():
-    table = Table("Name", "Hostname")
+    table = Table("Name", "Hostname", "User", "IdentityFile", title="Hosts")
     config = get_config()
     for host in config:
+        hostname = ""
+        user = ""
+        identity = ""
+
         for line in host.config:
-            if (line.key.lower() == "hostname"):
-                table.add_row(line.host, line.value)
+            match line.key.lower():
+                case "hostname":
+                    hostname = line.value
+                case "user":
+                    user = line.value
+                case "identityfile":
+                    identity = line.value
+
+        table.add_row(f"[green]{line.host}", hostname, user, identity)
+
     console.print(table)

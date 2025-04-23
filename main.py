@@ -40,11 +40,14 @@ def edit(host: Annotated[str, typer.Option("--host", "-h")] = ""):
 
 
 @app.command()
-def remove(name: str = ""):
+def remove(host: Annotated[str, typer.Option("--host", "-h")] = ""):
     '''
     Removes an SSH alias
     '''
-    print("Remove command")
+    if host == "":
+        edit_helper.remove_select()
+    else:
+        edit_helper.remove(host)
 
 
 if __name__ == '__main__':
