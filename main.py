@@ -7,38 +7,51 @@ app = typer.Typer()
 
 
 @app.command()
-def list(table: Annotated[bool, typer.Option("--table", "-t")] = False,
+def list(ls: Annotated[bool, typer.Option("--list", "-ls")] = False,
          json: Annotated[bool, typer.Option("--json", "-j")] = False):
     '''
     Lists current SSH aliases
     '''
-    if table:
-        list_helper.show_table()
+    if ls:
+        list_helper.show_host()
     elif json:
         list_helper.show_json()
     else:
-        list_helper.show_hosts()
+        list_helper.show_table()
 
 
 @app.command()
-def add(name: str, hostname, identity: str = ""):
+def add(name: str, hostname, identity: Annotated[str, typer.Option("-i", "--identity")] = ""):
     '''
     Adds a new SSH alias
     '''
-    print(f"Add: {name} with hostname: {hostname} to ssh file")
-    print(identity)
+    edit_helper.add(name, hostname, identity)
+
+
+@app.callback(invoke_without_command=True)
+def main(ctx: typer.Context, fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False):
+    if ctx.invoked_subcommand is None:
+        if fzf:
+            print("Run fssh script")
+            connect_helper.fzf_connect()
+        else:
+            connect_helper.connect()
 
 
 @app.command()
-def connect():
+def connect(fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False):
     '''
     Connects to a host
     '''
-    connect_helper.connect()
+    if fzf:
+        print("Run fssh script")
+        connect_helper.fzf_connect()
+    else:
+        connect_helper.connect()
 
 
 @app.command()
-def edit(host: Annotated[str, typer.Option("--host", "-h")] = ""):
+def edit(host: Annotated[str, typer.Argument()] = ""):
     '''
     Edits a new SSH alias
     '''
@@ -49,7 +62,7 @@ def edit(host: Annotated[str, typer.Option("--host", "-h")] = ""):
 
 
 @app.command()
-def remove(host: Annotated[str, typer.Option("--host", "-h")] = ""):
+def remove(host: Annotated[str, typer.Argument()] = ""):
     '''
     Removes an SSH alias
     '''

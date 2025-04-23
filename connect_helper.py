@@ -8,3 +8,7 @@ def connect():
     ans = prompt("What host # do you want to connect to")
     if ans in hosts.keys():
         subprocess.run(["ssh", hosts[ans]])
+
+
+def fzf_connect():
+    subprocess.run(["sh", "./fssh.sh"])

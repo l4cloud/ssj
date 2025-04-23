@@ -44,12 +44,9 @@ def edit_host(host, hostname):
             if (key.lower() in known_params):
                 value = prompt(f"Enter the value of option {
                                key}", default="Remove")
-                print(value)
                 if (value == "Remove"):
-                    print("Removing config line")
                     new_host.remove_config(key)
                 else:
-                    print("Adding config line")
                     c = ConfigLine(host.name, key, value)
                     new_host.add_config(c)
 
@@ -73,6 +70,45 @@ def remove(input):
         print(f"Host of name {input} not found")
     else:
         update_config(config)
+
+
+def add(name, hostname, identity):
+    config = get_config()
+    valid = True
+    for host in config:
+        if (host.name == name):
+            valid = False
+    if valid is True:
+        conf = []
+        conf.append(ConfigLine(name, "HostName", hostname))
+        if identity != "":
+            conf.append(ConfigLine(name, "IdentityFile", identity))
+        newHost = Host(name)
+        newHost.config = conf
+        config.append(newHost)
+        add_parameters(newHost)
+        update_config(config)
+    else:
+        print(f"Host exists with name: {name}")
+
+
+def add_parameters(host):
+    new = True
+    while (new):
+        add_new = confirm(
+            "Do you want to add any additional paramers?")
+        if not add_new:
+            new = False
+        else:
+            key = prompt("Enter an option you want to add")
+            if (key.lower() in known_params):
+                value = prompt(f"Enter the value of option {
+                               key}", default="Remove")
+                if (value == "Remove"):
+                    host.remove_config(key)
+                else:
+                    c = ConfigLine(host.name, key, value)
+                    host.add_config(c)
 
 
 def update_config(config):
