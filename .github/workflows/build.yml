@@ -18,3 +18,12 @@ jobs:
           requirements: 'requirements.txt'
           upload_exe_with_name: 'ssj'
           options: --onefile, -- name "ssj", --console,
+
+      - name: Upload Asset to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-assets/example.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      
