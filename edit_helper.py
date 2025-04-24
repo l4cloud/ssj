@@ -42,8 +42,8 @@ def edit_host(host, hostname):
         else:
             key = prompt("Enter an option you want to add")
             if (key.lower() in known_params):
-                value = prompt(f"Enter the value of option {
-                               key}", default="Remove")
+                value = prompt(f"Enter the value of option {key}",
+                               default="Remove")
                 if (value == "Remove"):
                     new_host.remove_config(key)
                 else:
@@ -102,8 +102,8 @@ def add_parameters(host):
         else:
             key = prompt("Enter an option you want to add")
             if (key.lower() in known_params):
-                value = prompt(f"Enter the value of option {
-                               key}", default="Remove")
+                value = prompt(f"Enter the value of option {key}",
+                               default="Remove")
                 if (value == "Remove"):
                     host.remove_config(key)
                 else:
