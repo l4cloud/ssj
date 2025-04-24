@@ -1,6 +1,7 @@
 name: Build Application
 run-name: ${{ github.actor }} is running build
 on: 
+  workflow_dispatch:
   release:
     types:
       - published
