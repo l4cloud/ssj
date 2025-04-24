@@ -35,6 +35,13 @@ jobs:
         run: |
           pyinstaller --onefile --name sjj main.py
 
+            # Step 6: Upload the build artifact (optional)
+      - name: Upload Executable as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sjj
+          path: dist/sjj
+
       - name: Upload Asset to Release
         uses: softprops/action-gh-release@v1
         with:
