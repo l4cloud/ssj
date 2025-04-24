@@ -41,12 +41,15 @@ jobs:
         with:
           name: sjj
           path: dist/sjj
-
-      - name: Upload Asset to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/ssj
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Step 6: Upload the executable to the created release
+      - name: Upload executable as release asset
+        run: |
+          RELEASE_ID=$(jq --raw-output .release.id $GITHUB_EVENT_PATH)
+          FILE_PATH=dist/sjj  # Path to your executable
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @$FILE_PATH \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=sjj"
 
       
