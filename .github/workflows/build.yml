@@ -33,23 +33,22 @@ jobs:
       # Step 5: Create the executable with PyInstaller
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --name sjj main.py
+          pyinstaller --onefile --name ssj main.py
 
             # Step 6: Upload the build artifact (optional)
       - name: Upload Executable as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: sjj
-          path: dist/sjj
-          # Step 6: Upload the executable to the created release
-      - name: Upload executable as release asset
-        run: |
-          RELEASE_ID=$(jq --raw-output .release.id $GITHUB_EVENT_PATH)
-          FILE_PATH=dist/sjj  # Path to your executable
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/octet-stream" \
-            --data-binary @$FILE_PATH \
-            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=sjj"
+          path: dist/ssj
 
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: dist/ssj
+          asset_name: ssj
       
