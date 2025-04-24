@@ -22,7 +22,7 @@ jobs:
       - name: Upload Asset to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release-assets/example.txt
+          files: dist/ssj.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
