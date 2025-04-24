@@ -10,24 +10,35 @@ jobs:
   run-build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Build
-        uses: sayyid5416/pyinstaller@v1
-        with:
-          python_ver: '3.10'
-          spec: 'main.py'
-          requirements: 'requirements.txt'
-          upload_exe_with_name: 'ssj'
-          options: --onefile, -- name "ssj", --console,
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Zip the Executable
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
         run: |
-          cd dist
-          zip ssj.zip ssj  # Zips the 'ssj' executable into 'ssj.zip'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Install PyInstaller
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      # Step 5: Create the executable with PyInstaller
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --name sjj main.py
 
       - name: Upload Asset to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/ssj.zip
+          files: dist/ssj
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
