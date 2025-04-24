@@ -1,9 +1,13 @@
 name: Build Application
 run-name: ${{ github.actor }} is running build
-on: [push]
+on: 
+  release:
+    types:
+      - published
+
 jobs:
   run-build:
     runs-on: ubuntu-22.04
     steps:
-      - run: echo "This is a test job"
+      - run: echo "This is a job that runs on release"
 
