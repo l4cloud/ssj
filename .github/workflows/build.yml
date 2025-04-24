@@ -19,6 +19,11 @@ jobs:
           upload_exe_with_name: 'ssj'
           options: --onefile, -- name "ssj", --console,
 
+      - name: Zip the Executable
+        run: |
+          cd dist
+          zip ssj.zip ssj  # Zips the 'ssj' executable into 'ssj.zip'
+
       - name: Upload Asset to Release
         uses: softprops/action-gh-release@v1
         with:
