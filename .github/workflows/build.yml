@@ -1,54 +1,62 @@
-name: Build Application
-run-name: ${{ github.actor }} is running build
-on: 
+name: Build and Release Python App
+
+on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-  release:
-    types:
-      - published
 
 jobs:
-  run-build:
-    runs-on: ubuntu-22.04
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.10'  
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pyinstaller
 
-      # Step 4: Install PyInstaller
-      - name: Install PyInstaller
-        run: pip install pyinstaller
-
-      # Step 5: Create the executable with PyInstaller
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --name ssj main.py
+          pyinstaller --onefile main.py  
 
-            # Step 6: Upload the build artifact (optional)
-      - name: Upload Executable as Artifact
+      - name: Archive the executable
+        run: |
+          mkdir -p dist-artifact
+          cp dist/main dist-artifact/ssj  
+
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sjj
-          path: dist/ssj
+          name: python-app
+          path: dist-artifact/
 
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-app
+          path: dist-artifact/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.run_number }}
+          tag_name: v${{ github.run_number }}
+          files: dist-artifact/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: dist/ssj
-          asset_name: ssj
-      
+     

@@ -21,7 +21,7 @@ def list(ls: Annotated[bool, typer.Option("--list", "-ls")] = False,
 
 
 @app.command()
-def add(name: str, hostname, identity: Annotated[str, typer.Option("-i", "--identity")] = ""):
+def add(hostname, name: Annotated[str, typer.Option("-n", "--name")] = "", identity: Annotated[str, typer.Option("-i", "--identity")] = ""):
     '''
     Adds a new SSH alias
     '''

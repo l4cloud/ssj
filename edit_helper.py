@@ -74,15 +74,23 @@ def remove(input):
 
 def add(name, hostname, identity):
     config = get_config()
+    if name == "":
+        name = prompt("Please provide a name for the host")
     valid = True
     for host in config:
         if (host.name == name):
             valid = False
     if valid is True:
         conf = []
-        conf.append(ConfigLine(name, "HostName", hostname))
+        parsed_name = parse_hostname(hostname)
+        if parsed_name[1] == "":
+            conf.append(ConfigLine(name, "HostName", hostname))
+        else:
+            conf.append(ConfigLine(name, "User", parsed_name[0]))
+            conf.append(ConfigLine(name, "HostName", parsed_name[1]))
         if identity != "":
             conf.append(ConfigLine(name, "IdentityFile", identity))
+
         newHost = Host(name)
         newHost.config = conf
         config.append(newHost)
@@ -90,6 +98,18 @@ def add(name, hostname, identity):
         update_config(config)
     else:
         print(f"Host exists with name: {name}")
+
+
+def parse_hostname(input):
+    '''
+    returns [hostname, user]
+    if hostname contins a user definition
+    '''
+    if '@' in input:
+        print("Hostname Has user definition")
+        return input.split('@')
+    else:
+        return [input, ""]
 
 
 def add_parameters(host):
