@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  VERSION_MAJOR: ${{ vars.VERSION_MAJOR }}
+  VERSION_MINOR: ${{ vars.VERSION_MINOR }}
 
 permissions:
   contents: write
@@ -49,6 +52,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Determine next patch version
+        id: version
+        run: |
+          prefix="v${VERSION_MAJOR}.${VERSION_MINOR}."
+          latest_tag=$(git tag --list "${prefix}*" | sort -V | tail -n1)
+
+          if [[ "$latest_tag" =~ ${prefix}([0-9]+)$ ]]; then
+            patch="${BASH_REMATCH[1]}"
+            next_patch=$((patch + 1))
+          else
+            next_patch=0
+          fi
+
+          version="v${VERSION_MAJOR}.${VERSION_MINOR}.${next_patch}"
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "version=$version" >> $GITHUB_OUTPUT
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
@@ -58,9 +84,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ github.run_number }}
-          tag_name: v${{ github.run_number }}
+          name: Release ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
           files: dist-artifact/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-     
