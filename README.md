@@ -1,4 +1,4 @@
-# SSH Manager
+# SSJ (SSH Toolkit)
 A tool to more easily manage your .ssh/config file.
 
 ## Installation
