@@ -39,7 +39,7 @@ def main(ctx: typer.Context, fzf: Annotated[bool, typer.Option("--fzf", "-f")] =
 
 
 @app.command()
-def connect(fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False):
+def connect(fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False, host: Annotated[str, typer.Argument()] = ""):
     '''
     Connects to a host
     '''
@@ -47,7 +47,10 @@ def connect(fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False):
         print("Run fssh script")
         connect_helper.fzf_connect()
     else:
-        connect_helper.connect()
+        if host == "":
+            connect_helper.connect()
+        else:
+            connect_helper.direct_connect(host)
 
 
 @app.command()
