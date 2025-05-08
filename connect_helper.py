@@ -16,5 +16,9 @@ def connect():
         subprocess.run(["ssh", hosts[ans]])
 
 
+def direct_connect(host):
+    subprocess.run(["ssh", host])
+
+
 def fzf_connect():
     subprocess.run(["bash", "-c", fzf_ssh])
