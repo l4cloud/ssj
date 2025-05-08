@@ -4,7 +4,8 @@ A tool to more easily manage your .ssh/config file.
 ## Installation
 
 1. Download binary from [releases](https://github.com/l4cloud/ssh_manager/releases) page
-2. Move binary to bin directory `mv ssj /usr/local/bin`
+2. Ensure tha file is executable `chmod +x ssj`
+3. Move binary to bin directory `mv ssj /usr/local/bin`
 
 ## Features
 - [x] List Hosts
