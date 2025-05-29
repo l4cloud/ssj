@@ -1,5 +1,6 @@
 from config import Host, ConfigLine, known_params
 import shutil
+import copy
 import os
 import json
 import list_helper
@@ -19,7 +20,7 @@ def edit(input):
     for host in config:
         if (host.name == input):
             valid = True
-            new = edit_host(host, input)
+            new = edit_host(host)
             config.remove(host)
             config.append(new)
     if (valid is False):
@@ -28,7 +29,23 @@ def edit(input):
         update_config(config)
 
 
-def edit_host(host, hostname):
+def copy_host(name, new_name):
+    config = get_config()
+    valid = False
+    for host in config:
+        if (host.name == name):
+            valid = True
+    if (valid is False):
+        print(f"Host of name {input} not found")
+    else:
+        new = copy.deepcopy(host)
+        new.name = new_name
+        new = edit_host(new)
+        config.append(new)
+        update_config(config)
+
+
+def edit_host(host):
     new_host = Host(host.name)
     for line in host.config:
         value = prompt(f"{line.key}", default=f"{line.value}")

@@ -29,11 +29,11 @@ def add(hostname, name: Annotated[str, typer.Option("-n", "--name")] = "", ident
 
 
 @app.command()
-def copy(name: str, hostname, identity: Annotated[str, typer.Option("-i", "--identity")] = ""):
+def copy(name: str, new_name: str):
     '''
-    Adds a new SSH alias
+    Copies an SSH alias
     '''
-    edit_helper.add(name, hostname, identity)
+    edit_helper.copy_host(name, new_name)
 
 
 @app.callback(invoke_without_command=True)
