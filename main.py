@@ -28,6 +28,14 @@ def add(hostname, name: Annotated[str, typer.Option("-n", "--name")] = "", ident
     edit_helper.add(name, hostname, identity)
 
 
+@app.command()
+def copy(name: str, new_name: str):
+    '''
+    Copies an SSH alias
+    '''
+    edit_helper.copy_host(name, new_name)
+
+
 @app.callback(invoke_without_command=True)
 def main(ctx: typer.Context, fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False):
     if ctx.invoked_subcommand is None:
