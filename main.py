@@ -62,14 +62,14 @@ def connect(fzf: Annotated[bool, typer.Option("--fzf", "-f")] = False, host: Ann
 
 
 @app.command()
-def edit(host: Annotated[str, typer.Argument()] = ""):
+def edit(host: Annotated[str, typer.Argument()] = "", ip: Annotated[str, typer.Option("-i", "--ip")] = ""):
     '''
     Edits a new SSH alias
     '''
     if host == "":
-        edit_helper.select()
+        edit_helper.select(ip=ip)
     else:
-        edit_helper.edit(host)
+        edit_helper.edit(host, ip=ip)
 
 
 @app.command()
