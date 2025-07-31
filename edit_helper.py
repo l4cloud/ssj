@@ -8,21 +8,32 @@ from typer import prompt, confirm
 from config import get_config
 
 
-def select():
+def select(ip = ''):
     list_helper.show_table()
     answer = prompt("Choose a host to edit")
-    edit(answer)
+    edit(answer, ip)
 
 
-def edit(input):
+def edit(input, ip=""):
     config = get_config()
     valid = False
     for host in config:
         if (host.name == input):
             valid = True
-            new = edit_host(host)
-            config.remove(host)
-            config.append(new)
+            if ip != "":
+                hostname_found = False
+                for line in host.config:
+                    if line.key.lower() == "hostname":
+                        line.value = ip
+                        hostname_found = True
+                        break
+                if not hostname_found:
+                    host.add_config(ConfigLine(host.name, "HostName", ip))
+            else:
+                new = edit_host(host)
+                config.remove(host)
+                config.append(new)
+            break
     if (valid is False):
         print(f"Host of name {input} not found")
     else:
