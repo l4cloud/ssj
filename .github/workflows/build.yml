@@ -34,7 +34,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile main.py  
+          pyinstaller --onefile --runtime-tmpdir . main.py  
 
       - name: Archive the executable
         run: |
