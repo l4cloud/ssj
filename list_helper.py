@@ -1,67 +1,50 @@
 import os.path
+from concurrent.futures import ThreadPoolExecutor
+import connection_tester
 import parser
 import json
 from config import get_config
 from rich import print
 from rich.table import Table
 from rich.console import Console
+from rich.live import Live
+from rich.spinner import Spinner
 
 console = Console()
 
-
-def show_hosts():
+def show_table(test_connectivity: bool = False):
     config = get_config()
-    for host in config:
-        for line in host.config:
-            if (line.key.lower() == "hostname"):
-                print(f"{line.host}: {line.value}")
+    
+    if not test_connectivity:
+        table = Table("Name", "Hostname", "User",
+                      "IdentityFile", title="Hosts :rocket:")
+        for host in config:
+            hostname = ""
+            user = ""
+            identity = ""
 
+            for line in host.config:
+                match line.key.lower():
+                    case "hostname":
+                        hostname = line.value
+                    case "user":
+                        user = line.value
+                    case "identityfile":
+                        identity = line.value
+            
+            table.add_row(f"[green]{host.name}", hostname, user, identity)
+        console.print(table)
+        return [host.name for host in config]
 
-def show_numbered_grid():
-    config = get_config()
-    columns = 4
-    index = 1
-    host_strings = []
-    output_hosts = {}
-    grid = Table.grid(expand=False)
-    for host in config:
-        host_strings.append(f"[{index}] [green]{host.name} ")
-        output_hosts[str(index)] = host.name
-        index += 1
-
-    for i in range(columns):
-        grid.add_column()
-
-    for i in range(0, len(host_strings), columns):
-        row = host_strings[i:i + columns]
-        if len(row) < columns:
-            row.extend([""] * (columns - len(row)))
-        grid.add_row(*row)
-
-    print(grid)
-    return (output_hosts)
-
-
-def show_json():
-    config = get_config()
-    hosts = []
-    for host in config:
-        new = {"host": host.name}
-        for line in host.config:
-            new[line.key] = line.value
-        hosts.append(new)
-    print(json.dumps(hosts, indent=4, default=str))
-
-
-def show_table():
     table = Table("Name", "Hostname", "User",
-                  "IdentityFile", title="Hosts :rocket:")
-    config = get_config()
-    for host in config:
+                  "IdentityFile", "Status", title="Hosts :rocket:")
+    hosts = list(config)
+    
+    host_data = []
+    for host in hosts:
         hostname = ""
         user = ""
         identity = ""
-
         for line in host.config:
             match line.key.lower():
                 case "hostname":
@@ -70,7 +53,41 @@ def show_table():
                     user = line.value
                 case "identityfile":
                     identity = line.value
+        
+        host_data.append({
+            "name": host.name,
+            "hostname": hostname,
+            "user": user,
+            "identity": identity,
+            "status": Spinner("dots", "Pinging...")
+        })
 
-        table.add_row(f"[green]{line.host}", hostname, user, identity)
+    for data in host_data:
+        table.add_row(f"[green]{data['name']}", data['hostname'], data['user'], data['identity'], data['status'])
 
-    console.print(table)
+    with Live(table, console=console, screen=False, refresh_per_second=10) as live:
+        with ThreadPoolExecutor() as executor:
+            host_names = []
+            for host in hosts:
+                hostname = host.name
+                for line in host.config:
+                    if line.key.lower() == "hostname":
+                        hostname = line.value
+                        break
+                host_names.append(hostname)
+            results = executor.map(connection_tester.test_connection, host_names)
+
+            for i, is_online in enumerate(results):
+                status = "[green]Online[/green]" if is_online else "[red]Offline[/red]"
+                host_data[i]['status'] = status
+                
+                table = Table("Name", "Hostname", "User",
+                              "IdentityFile", "Status", title="Hosts :rocket:")
+                
+                for data in host_data:
+                    if isinstance(data['status'], Spinner):
+                         table.add_row(f"[green]{data['name']}", data['hostname'], data['user'], data['identity'], data['status'])
+                    else:
+                        table.add_row(f"[green]{data['name']}", data['hostname'], data['user'], data['identity'], data['status'])
+                live.update(table)
+    return [host.name for host in config]

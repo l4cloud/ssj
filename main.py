@@ -7,17 +7,14 @@ app = typer.Typer()
 
 
 @app.command()
-def list(ls: Annotated[bool, typer.Option("--list", "-ls")] = False,
-         json: Annotated[bool, typer.Option("--json", "-j")] = False):
+def list(no_test: Annotated[bool, typer.Option("--no-test", "-nt")] = False):
     '''
     Lists current SSH aliases
     '''
-    if ls:
-        list_helper.show_host()
-    elif json:
-        list_helper.show_json()
-    else:
+    if no_test:
         list_helper.show_table()
+    else:
+        list_helper.show_table(test_connectivity=True)
 
 
 @app.command()
@@ -81,6 +78,26 @@ def remove(host: Annotated[str, typer.Argument()] = ""):
         edit_helper.remove_select()
     else:
         edit_helper.remove(host)
+
+
+@app.command()
+def export(
+    format: Annotated[str, typer.Option("-f", "--format", help="Export format: json, yaml, raw")] = "json",
+    output: Annotated[str, typer.Option("-o", "--output", help="Output filename")] = "",
+    summary: Annotated[bool, typer.Option("-s", "--summary", help="Include configuration summary")] = False
+):
+    '''
+    Export SSH configuration to various formats
+    '''
+    try:
+        import export_helper
+        output_file = None if output == "" else output
+        exported_file = export_helper.export_config(format, output_file, summary)
+        print(f"✅ SSH config exported successfully to: {exported_file}")
+    except ImportError as e:
+        print(f"❌ Export failed: {e}")
+    except Exception as e:
+        print(f"❌ Export failed: {e}")
 
 
 if __name__ == '__main__':

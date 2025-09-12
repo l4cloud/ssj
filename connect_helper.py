@@ -1,6 +1,7 @@
 import list_helper
 from typer import prompt
 import subprocess
+from config import get_config
 
 fzf_ssh = """#!/bin/bash
 if type tmux >/dev/null 2>/dev/null; then
@@ -19,10 +20,18 @@ fi
 
 
 def connect():
-    hosts = list_helper.show_numbered_grid()
-    ans = prompt("What host # do you want to connect to")
-    if ans in hosts.keys():
-        subprocess.run(["ssh", hosts[ans]])
+    hosts = list_helper.show_table(test_connectivity=True)
+    
+    if not hosts:
+        print("No SSH aliases found.")
+        return
+
+    ans = prompt("What host do you want to connect to")
+    
+    if ans in hosts:
+        subprocess.run(["ssh", ans])
+    else:
+        print("Invalid selection.")
 
 
 def direct_connect(host):
